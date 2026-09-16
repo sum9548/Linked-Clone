@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import { userDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
-const socket = io("http://localhost:8000");
+const socket = io("https://linkedin-backend-im0k.onrender.com");
 
 const ConnectionButton = ({ userId }) => {
   const { serverUrl } = useContext(authDataContext);
