@@ -19,7 +19,7 @@ const server = http.createServer(app);
 
 export const io = new Server(server, {
                 cors: ({
-                  origin: "https://rolldown.rs/reference/OutputOptions.codeSplitting",
+                  origin: "https://linked-frontend-vy7q.onrender.com",
                   credentials: true,
                 }),
 });
@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://rolldown.rs/reference/OutputOptions.codeSplitting",
+    origin: "https://linked-frontend-vy7q.onrender.com",
     credentials: true,
   }),
 );
