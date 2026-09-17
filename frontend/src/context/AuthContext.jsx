@@ -5,7 +5,7 @@ import { createContext } from 'react'
 export const authDataContext = createContext();
 
 const AuthContext = ({children}) => {
-const serverUrl = "https://linkedin-backend-im0k.onrender.com"
+const serverUrl = "https://linked-backend-kned.onrender.com"
 const value = {
     serverUrl
 }
