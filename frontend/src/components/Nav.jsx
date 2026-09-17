@@ -144,7 +144,7 @@ const Nav = () => {
             }}
           >
             <TiHome className="text-2xl" />
-            <span className="text-sm hidden">Home</span>
+            <span className="hidden md:block text-sm">Home</span>
           </div>
 
           <div
