@@ -5,7 +5,7 @@ import genToken from "../config/token.js";
 const cookieOptions = {
   httpOnly: true,
   maxAge: 7 * 24 * 60 * 60 * 1000,
-  sameSite: "strict",
+  sameSite: "production" ? "none" : "lax",
   secure: process.env.NODE_ENVIRONMENT === "production",
 };
 
