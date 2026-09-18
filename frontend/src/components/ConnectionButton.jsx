@@ -28,7 +28,7 @@ const ConnectionButton = ({ userId }) => {
         },
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       // Immediately change button
       setStatus("pending");
@@ -48,7 +48,7 @@ const ConnectionButton = ({ userId }) => {
         },
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       setStatus(result.data.status);
     } catch (error) {
@@ -68,7 +68,7 @@ const ConnectionButton = ({ userId }) => {
         },
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       // Update UI immediately
       setStatus("connect");
