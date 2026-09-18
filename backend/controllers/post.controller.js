@@ -33,6 +33,7 @@ export const createPost = async (req, res) => {
         description,
       });
     }
+    await newPost.populate("author", "firstName userName lastName profileImage headline");
     return res.status(201).json(newPost);
   } catch (error) {
     return res.status(500).json({
