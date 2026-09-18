@@ -7,6 +7,7 @@ import { userDataContext } from "./context/UserContext";
 import Network from "./pages/Network";
 import Profile from "./pages/Profile";
 import Notification from "./pages/Notification";
+import Chat from "./pages/Chat";
 
 function App() {
   const { userData } = useContext(userDataContext);
@@ -42,6 +43,10 @@ function App() {
       <Route
         path="/notification"
         element={userData ? <Notification /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/chat"
+        element={userData ? <Chat /> : <Navigate to="/login" />}
       />
     </Routes>
   );

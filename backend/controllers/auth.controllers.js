@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import genToken from "../config/token.js";
-import dotenv from "dotenv";
 
 const cookieOptions = {
   httpOnly: true,

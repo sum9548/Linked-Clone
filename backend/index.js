@@ -10,6 +10,7 @@ import connectionRouter from "./routes/connection.routes.js";
 import http from "http";
 import { Server } from "socket.io";
 import notificationRouter from "./routes/notification.routes.js";
+import messageRouter from "./routes/message.routes.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/connection", connectionRouter);
 app.use("/api/notification", notificationRouter);
+app.use("/api/message", messageRouter);
 
 app.get("/", (req, res) => {
   res.send("hello from get route");

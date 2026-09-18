@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import logo2 from "../assets/logo2.png";
 import { IoSearchSharp, IoNotificationsSharp } from "react-icons/io5";
 import { TiHome } from "react-icons/ti";
 import { FaUserGroup } from "react-icons/fa6";
+import { RiMessage3Fill } from "react-icons/ri";
 import dp from "../assets/dp.png";
 import { userDataContext } from "../context/UserContext";
 import { authDataContext } from "../context/AuthContext";
@@ -13,11 +14,40 @@ const Nav = () => {
   const [activeSearch, setActiveSearch] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  const { userData, setUserData,handleGetProfile } = useContext(userDataContext);
+  const { userData, setUserData, handleGetProfile } =
+    useContext(userDataContext);
   const { serverUrl } = useContext(authDataContext);
 
   const [searchInput, setSearchInput] = useState("");
   const [searchData, setSearchData] = useState([]);
+
+  // ==========================================================
+  // Hidden chat feature: stays hidden until you long-press the logo
+  // ==========================================================
+  const [showChat, setShowChat] = useState(false);
+  const pressTimer = useRef(null);
+  const longPressTriggered = useRef(false);
+
+  const handlePressStart = () => {
+    longPressTriggered.current = false;
+    pressTimer.current = setTimeout(() => {
+      setShowChat(true);
+      longPressTriggered.current = true;
+    }, 4000);
+  };
+
+  const handlePressEnd = () => {
+    clearTimeout(pressTimer.current);
+  };
+
+  const handleLogoClick = () => {
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
+      return;
+    }
+    setActiveSearch(false);
+    navigate("/");
+  };
 
   const navigate = useNavigate();
 
@@ -34,36 +64,31 @@ const Nav = () => {
     }
   };
 
- const handleSearch = async () => {
-  if (!searchInput.trim()) {
-    setSearchData([]);
-    return;
-  }
+  const handleSearch = async () => {
+    if (!searchInput.trim()) {
+      setSearchData([]);
+      return;
+    }
 
-  try {
-    const result = await axios.get(
-      `${serverUrl}/api/user/search?query=${encodeURIComponent(
-        searchInput.trim()
-      )}`,
-      {
-        withCredentials: true,
-      }
-    );
+    try {
+      const result = await axios.get(
+        `${serverUrl}/api/user/search?query=${encodeURIComponent(
+          searchInput.trim(),
+        )}`,
+        {
+          withCredentials: true,
+        },
+      );
 
-    setSearchData(result.data);
-  } catch (error) {
-    setSearchData([]);
+      setSearchData(result.data);
+    } catch (error) {
+      setSearchData([]);
 
-    console.log(
-      "Search error:",
-      error.response?.data || error.message
-    );
-  }
-};
+      console.log("Search error:", error.response?.data || error.message);
+    }
+  };
   useEffect(() => {
-   
-      handleSearch();
-  
+    handleSearch();
   }, [searchInput]);
 
   return (
@@ -71,7 +96,7 @@ const Nav = () => {
       <div className="max-w-7xl h-[80px] mx-auto flex items-center justify-between px-4">
         {/* Left */}
         <div className="flex items-center gap-3">
-          <img
+          {/* <img
             src={logo2}
             alt=""
             className="w-12 cursor-pointer"
@@ -79,6 +104,17 @@ const Nav = () => {
               setActiveSearch(false);
               navigate("/");
             }}
+          /> */}
+          <img
+            src={logo2}
+            alt=""
+            className="w-12 cursor-pointer select-none"
+            onClick={handleLogoClick}
+            onMouseDown={handlePressStart}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onTouchStart={handlePressStart}
+            onTouchEnd={handlePressEnd}
           />
 
           {!activeSearch && (
@@ -93,7 +129,7 @@ const Nav = () => {
               {searchData.map((search, i) => (
                 <div
                   className="flex gap-[20px] items-center p-[10px] border-b-2 border-b-gray-300  hover:bg-gray-200 cursor-pointer rounded-lg "
-                  onClick={()=>handleGetProfile(search.userName)}
+                  onClick={() => handleGetProfile(search.userName)}
                   key={i}
                 >
                   <div className="w-20 h-20 rounded-full overflow-hidden">
@@ -138,13 +174,14 @@ const Nav = () => {
 
         {/* Right */}
         <div className="flex items-center gap-4 md:gap-6 relative">
-          <div className="flex flex-col items-center text-gray-600 cursor-pointer"
-          onClick={() => {
+          <div
+            className="flex flex-col items-center text-gray-600 cursor-pointer"
+            onClick={() => {
               navigate("/");
             }}
           >
             <TiHome className="text-2xl" />
-            <span className="text-sm hidden">Home</span>
+            <span className="hidden md:block text-sm">Home</span>
           </div>
 
           <div
@@ -155,11 +192,23 @@ const Nav = () => {
             <span className="text-sm">My Network</span>
           </div>
 
-          <div className="flex flex-col items-center text-gray-600 cursor-pointer"
-          onClick={()=>navigate("/notification")}>
+          <div
+            className="flex flex-col items-center text-gray-600 cursor-pointer"
+            onClick={() => navigate("/notification")}
+          >
             <IoNotificationsSharp className="text-2xl" />
             <span className="hidden md:block text-sm">Notifications</span>
           </div>
+
+          {showChat && (
+            <div
+              className="flex flex-col items-center text-gray-600 cursor-pointer"
+              onClick={() => navigate("/chat")}
+            >
+              <RiMessage3Fill className="text-2xl" />
+              <span className="hidden md:block text-sm">Chat</span>
+            </div>
+          )}
 
           {/* Profile */}
           <div
