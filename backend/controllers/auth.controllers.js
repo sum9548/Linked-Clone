@@ -2,12 +2,6 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import genToken from "../config/token.js";
 
-// const cookieOptions = {
-//   httpOnly: true,
-//   maxAge: 7 * 24 * 60 * 60 * 1000,
-//   sameSite: "production" ? "none" : "lax",
-//   secure: process.env.NODE_ENVIRONMENT === "production",
-// };
 const cookieOptions = {
   httpOnly: true,
   maxAge: 7 * 24 * 60 * 60 * 1000,
