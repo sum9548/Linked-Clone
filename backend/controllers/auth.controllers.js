@@ -9,6 +9,7 @@ const cookieOptions = {
   secure: process.env.NODE_ENVIRONMENT === "production",
 };
 
+
 export const signUp = async (req, res) => {
   try {
     const { firstName, lastName, userName, email, password } = req.body;

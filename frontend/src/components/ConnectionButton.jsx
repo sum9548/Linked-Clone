@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import { userDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
-const socket = io("http://localhost:8000");
+const socket = io("https://linked-backend-kned.onrender.com");
 
 const ConnectionButton = ({ userId }) => {
   const { serverUrl } = useContext(authDataContext);
@@ -28,7 +28,7 @@ const ConnectionButton = ({ userId }) => {
         },
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       // Immediately change button
       setStatus("pending");
@@ -48,7 +48,7 @@ const ConnectionButton = ({ userId }) => {
         },
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       setStatus(result.data.status);
     } catch (error) {
@@ -68,7 +68,7 @@ const ConnectionButton = ({ userId }) => {
         },
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       // Update UI immediately
       setStatus("connect");
