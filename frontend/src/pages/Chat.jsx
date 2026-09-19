@@ -3,13 +3,14 @@ import Nav from "../components/Nav";
 import axios from "axios";
 import io from "socket.io-client";
 import dp from "../assets/dp.png";
+import { IoArrowBack } from "react-icons/io5";
 import { authDataContext } from "../context/AuthContext";
 import { userDataContext } from "../context/UserContext";
 
 // Same backend URL used everywhere else in the app (Post.jsx, ConnectionButton.jsx).
 // Keeping ONE hardcoded value like this is what caused a bug before —
 // double check this matches your real backend URL if you ever change it.
-const socket = io("https://linkedin-backend-im0k.onrender.com");
+const socket = io("https://linked-backend-kned.onrender.com");
 
 const Chat = () => {
   const { serverUrl } = useContext(authDataContext);
@@ -132,8 +133,14 @@ const Chat = () => {
     <div className="w-screen h-[100vh] bg-[#f3f2ef] pt-[80px] flex">
       <Nav />
 
-      {/* LEFT: connections sidebar */}
-      <div className="w-[300px] h-full bg-white border-r overflow-y-auto">
+      {/* LEFT: connections sidebar.
+          On small screens: full width, but HIDDEN once a chat is open.
+          On md+ screens: fixed 300px width, ALWAYS visible. */}
+      <div
+        className={`${
+          activeChat ? "hidden" : "flex"
+        } md:flex flex-col w-full md:w-[300px] h-full bg-white border-r overflow-y-auto`}
+      >
         {connections.map((connection) => (
           <div
             key={connection._id}
@@ -144,21 +151,37 @@ const Chat = () => {
           >
             <img
               src={connection.profileImage || dp}
-              className="w-[45px] h-[45px] rounded-full object-cover"
+              className="w-[45px] h-[45px] rounded-full object-cover shrink-0"
             />
-            <div>
+            {/* min-w-0 + truncate stop long names from wrapping/squishing */}
+            <div className="min-w-0 truncate">
               {connection.firstName} {connection.lastName}
             </div>
           </div>
         ))}
       </div>
 
-      {/* RIGHT: active conversation */}
-      <div className="flex-1 flex flex-col">
+      {/* RIGHT: active conversation.
+          On small screens: full width, but HIDDEN until a chat is open.
+          On md+ screens: always visible next to the sidebar. */}
+      <div
+        className={`${
+          activeChat ? "flex" : "hidden"
+        } md:flex flex-1 flex-col`}
+      >
         {activeChat ? (
           <>
-            <div className="p-[15px] bg-white border-b font-semibold">
-              {activeChat.firstName} {activeChat.lastName}
+            <div className="p-[15px] bg-white border-b font-semibold flex items-center gap-[10px]">
+              {/* Back arrow only shows on small screens (md:hidden) —
+                  tapping it just clears activeChat, which switches us
+                  back to showing the sidebar instead of the chat. */}
+              <IoArrowBack
+                className="text-2xl cursor-pointer md:hidden"
+                onClick={() => setActiveChat(null)}
+              />
+              <span className="truncate">
+                {activeChat.firstName} {activeChat.lastName}
+              </span>
             </div>
 
             <div className="flex-1 overflow-y-auto p-[20px] flex flex-col gap-[10px]">
@@ -167,7 +190,7 @@ const Chat = () => {
                 return (
                   <div
                     key={message._id}
-                    className={`max-w-[60%] p-[10px] rounded-lg ${
+                    className={`max-w-[75%] md:max-w-[60%] p-[10px] rounded-lg ${
                       isMine
                         ? "bg-blue-500 text-white self-end"
                         : "bg-white self-start"
@@ -186,18 +209,18 @@ const Chat = () => {
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 placeholder="Type a message..."
-                className="flex-1 border rounded-full px-[15px] py-[8px] outline-none"
+                className="flex-1 min-w-0 border rounded-full px-[15px] py-[8px] outline-none"
               />
               <button
                 onClick={handleSend}
-                className="bg-blue-500 text-white px-[20px] rounded-full"
+                className="bg-blue-500 text-white px-[20px] rounded-full shrink-0"
               >
                 Send
               </button>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
+          <div className="flex-1 items-center justify-center text-gray-500 hidden md:flex">
             Select a connection to start chatting
           </div>
         )}
