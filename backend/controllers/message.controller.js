@@ -1,23 +1,40 @@
 import Message from "../models/message.model.js";
 import { io, userSocketMap } from "../index.js";
+import uploadOnCloudinary from "../config/cloudinary.js";
 
 // ======================================================
 // SEND MESSAGE
 // ======================================================
 // Route: POST /api/message/send/:receiverId
 // req.userId comes from isAuth middleware (the sender)
+// req.file comes from multer, ONLY if an image was attached
 export const sendMessage = async (req, res) => {
   try {
     const { receiverId } = req.params;
     const { text } = req.body;
     const senderId = req.userId;
 
+    // A message needs at least text OR an image — reject truly empty ones.
+    if (!text?.trim() && !req.file) {
+      return res.status(400).json({
+        message: "Message must have text or an image",
+      });
+    }
+
+    let image = "";
+    if (req.file) {
+      // Same upload helper used for post images — uploads the file to
+      // Cloudinary and gives back a permanent hosted URL.
+      image = await uploadOnCloudinary(req.file.path);
+    }
+
     // 1. Save the message to MongoDB first — this is the "permanent record"
     //    so the chat history is still there even if both people are offline.
     let newMessage = await Message.create({
       sender: senderId,
       receiver: receiverId,
-      text,
+      text: text || "",
+      image,
     });
 
     // 2. Fill in sender/receiver details (name, photo) before sending back,
