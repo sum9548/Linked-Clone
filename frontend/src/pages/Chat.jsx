@@ -4,7 +4,7 @@ import axios from "axios";
 import io from "socket.io-client";
 import dp from "../assets/dp.png";
 import { IoArrowBack } from "react-icons/io5";
-import { BsImage } from "react-icons/bs";
+import { BsImage, BsSendFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import { authDataContext } from "../context/AuthContext";
 import { userDataContext } from "../context/UserContext";
@@ -267,31 +267,39 @@ const Chat = () => {
             )}
 
             <div className="p-[15px] bg-white border-t flex gap-[10px] items-center">
-              {/* Clicking this icon just "clicks" the hidden file input for us */}
-              <BsImage
-                className="text-2xl text-gray-500 cursor-pointer shrink-0"
-                onClick={() => fileInputRef.current.click()}
-              />
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                hidden
-                onChange={handleImageSelect}
-              />
+              {/* This wrapper is "relative" so we can place the image icon
+                  ON TOP of the input, anchored to its left edge — that's
+                  the trick behind the WhatsApp-style look. */}
+              <div className="flex-1 min-w-0 relative">
+                {/* Positioned absolutely INSIDE the input's left side */}
+                <BsImage
+                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-xl text-gray-500 cursor-pointer"
+                  onClick={() => fileInputRef.current.click()}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  hidden
+                  onChange={handleImageSelect}
+                />
 
-              <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Type a message..."
-                className="flex-1 min-w-0 border rounded-full px-[15px] py-[8px] outline-none"
-              />
+                <input
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Type a message..."
+                  // pl-[42px] pushes the typed text to the right so it
+                  // never overlaps the icon sitting inside the box.
+                  className="w-full border rounded-full pl-[42px] pr-[15px] py-[8px] outline-none"
+                />
+              </div>
+
               <button
                 onClick={handleSend}
-                className="bg-blue-500 text-white px-[20px] rounded-full shrink-0"
+                className="bg-blue-500 text-white w-[42px] h-[42px] rounded-full shrink-0 flex items-center justify-center"
               >
-                Send
+                <BsSendFill className="text-lg" />
               </button>
             </div>
           </>
