@@ -266,13 +266,10 @@ const Chat = () => {
               </div>
             )}
 
-            <div className="p-[15px] bg-white border-t flex gap-[10px] items-center">
-              {/* This wrapper is "relative" so we can place the image icon
-                  ON TOP of the input, anchored to its left edge — that's
-                  the trick behind the WhatsApp-style look. */}
+                        <div className="p-[15px] bg-white border-t flex gap-[10px] items-center">
+              {/* Same "relative" trick as before, but now the icon is
+                  pinned to the RIGHT edge instead of the left. */}
               <div className="flex-1 min-w-0 relative">
-                {/* Positioned absolutely INSIDE the input's left side */}
-               
                 <input
                   type="file"
                   accept="image/*"
@@ -280,16 +277,19 @@ const Chat = () => {
                   hidden
                   onChange={handleImageSelect}
                 />
+
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Type a message..."
-                  // pl-[42px] pushes the typed text to the right so it
-                  // never overlaps the icon sitting inside the box.
-                  className="w-full border rounded-full pl-[42px] pr-[15px] py-[8px] outline-none"
+                  // pr-[42px] (padding-RIGHT) leaves room on the right side
+                  // now, since that's where the icon sits.
+                  className="w-full border rounded-full pl-[15px] pr-[42px] py-[8px] outline-none"
                 />
-                 <BsImage
+
+                {/* Positioned absolutely INSIDE the input's right side */}
+                <BsImage
                   className="absolute right-[14px] top-1/2 -translate-y-1/2 text-xl text-gray-500 cursor-pointer"
                   onClick={() => fileInputRef.current.click()}
                 />
