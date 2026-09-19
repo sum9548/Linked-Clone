@@ -290,7 +290,7 @@ const Chat = () => {
                   className="w-full border rounded-full pl-[42px] pr-[15px] py-[8px] outline-none"
                 />
                  <BsImage
-                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-xl text-gray-500 cursor-pointer"
+                  className="absolute right-[14px] top-1/2 -translate-y-1/2 text-xl text-gray-500 cursor-pointer"
                   onClick={() => fileInputRef.current.click()}
                 />
               </div>
