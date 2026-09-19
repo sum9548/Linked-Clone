@@ -4,6 +4,8 @@ import axios from "axios";
 import io from "socket.io-client";
 import dp from "../assets/dp.png";
 import { IoArrowBack } from "react-icons/io5";
+import { BsImage } from "react-icons/bs";
+import { RxCross1 } from "react-icons/rx";
 import { authDataContext } from "../context/AuthContext";
 import { userDataContext } from "../context/UserContext";
 
@@ -27,6 +29,17 @@ const Chat = () => {
 
   // What's currently typed in the input box
   const [text, setText] = useState("");
+
+  // The actual image FILE, ready to upload to the backend
+  const [backendImage, setBackendImage] = useState(null);
+
+  // A local preview URL so YOU can see the image before sending it
+  // (this is NOT the uploaded version — just a temporary browser-only preview)
+  const [frontendImage, setFrontendImage] = useState("");
+
+  // A hidden <input type="file"> is triggered by clicking a visible icon —
+  // this ref lets our icon's onClick "remote control" that hidden input.
+  const fileInputRef = useRef(null);
 
   // Used to auto-scroll to the newest message
   const bottomRef = useRef(null);
@@ -108,15 +121,41 @@ const Chat = () => {
   }, [messages]);
 
   // ==========================================================
-  // 5. Send a message
+  // 5. Pick an image from your gallery/files
+  // ==========================================================
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBackendImage(file); // the real file, saved for upload later
+    setFrontendImage(URL.createObjectURL(file)); // a temporary preview link
+  };
+
+  const removeSelectedImage = () => {
+    setBackendImage(null);
+    setFrontendImage("");
+  };
+
+  // ==========================================================
+  // 6. Send a message (text, image, or both)
   // ==========================================================
   const handleSend = async () => {
-    if (!text.trim() || !activeChat) return; // don't send empty messages
+    // Don't send a truly empty message (no text AND no image)
+    if (!text.trim() && !backendImage) return;
+    if (!activeChat) return;
 
     try {
+      // FormData is required whenever you're sending a file — you can't
+      // send a File object as plain JSON like you can with text.
+      const formData = new FormData();
+      formData.append("text", text);
+      if (backendImage) {
+        formData.append("image", backendImage);
+      }
+
       const result = await axios.post(
         `${serverUrl}/api/message/send/${activeChat._id}`,
-        { text },
+        formData,
         { withCredentials: true },
       );
 
@@ -124,6 +163,7 @@ const Chat = () => {
       // I don't need the socket for this since it's MY message.
       setMessages((prev) => [...prev, result.data]);
       setText("");
+      removeSelectedImage();
     } catch (error) {
       console.log(error);
     }
@@ -196,14 +236,50 @@ const Chat = () => {
                         : "bg-white self-start"
                     }`}
                   >
-                    {message.text}
+                    {/* Show the image if this message has one */}
+                    {message.image && (
+                      <img
+                        src={message.image}
+                        className="max-w-full rounded-md mb-[6px]"
+                      />
+                    )}
+                    {/* Only render the text line if there IS text —
+                        an image-only message shouldn't show an empty line */}
+                    {message.text && <div>{message.text}</div>}
                   </div>
                 );
               })}
               <div ref={bottomRef} />
             </div>
 
-            <div className="p-[15px] bg-white border-t flex gap-[10px]">
+            {/* Preview of the image you picked, before you hit Send */}
+            {frontendImage && (
+              <div className="p-[10px] bg-white border-t flex items-center gap-[10px]">
+                <img
+                  src={frontendImage}
+                  className="w-[60px] h-[60px] object-cover rounded-md"
+                />
+                <RxCross1
+                  className="cursor-pointer text-gray-500"
+                  onClick={removeSelectedImage}
+                />
+              </div>
+            )}
+
+            <div className="p-[15px] bg-white border-t flex gap-[10px] items-center">
+              {/* Clicking this icon just "clicks" the hidden file input for us */}
+              <BsImage
+                className="text-2xl text-gray-500 cursor-pointer shrink-0"
+                onClick={() => fileInputRef.current.click()}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                hidden
+                onChange={handleImageSelect}
+              />
+
               <input
                 value={text}
                 onChange={(e) => setText(e.target.value)}
