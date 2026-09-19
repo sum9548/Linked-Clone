@@ -272,10 +272,7 @@ const Chat = () => {
                   the trick behind the WhatsApp-style look. */}
               <div className="flex-1 min-w-0 relative">
                 {/* Positioned absolutely INSIDE the input's left side */}
-                <BsImage
-                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-xl text-gray-500 cursor-pointer"
-                  onClick={() => fileInputRef.current.click()}
-                />
+               
                 <input
                   type="file"
                   accept="image/*"
@@ -283,7 +280,6 @@ const Chat = () => {
                   hidden
                   onChange={handleImageSelect}
                 />
-
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -292,6 +288,10 @@ const Chat = () => {
                   // pl-[42px] pushes the typed text to the right so it
                   // never overlaps the icon sitting inside the box.
                   className="w-full border rounded-full pl-[42px] pr-[15px] py-[8px] outline-none"
+                />
+                 <BsImage
+                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-xl text-gray-500 cursor-pointer"
+                  onClick={() => fileInputRef.current.click()}
                 />
               </div>
 
